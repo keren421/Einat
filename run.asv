@@ -32,11 +32,8 @@ while it<maxit
         MT = WT ;
         k = randi(K) ; % chose number of antibiotic to mutate
         
-        if MT(k,1)<MT(k,2)
-            p = 1;
-        else
-            p = (rand>Mut_prod) + 1 ; % choose mutating production or resistance
-        end
+        if WT(
+        p = (rand>Mut_prod) + 1 ; % choose mutating production or resistance
         
         % mutate
         P0 = MT(k,p) ;
