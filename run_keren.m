@@ -66,7 +66,7 @@ while it<maxit
     if ~mod(t,100000), disp([t,it]); end
 end
 %% plot
-figure(4);clf;
+figure(1);clf;
 for k = 1:K
     subplot(K,1,k)
     hold on
@@ -82,7 +82,7 @@ function [y1,y2] = single_droplet(P1,P2,cost)
 f1 = fitness(P1,cost) ;
 f2 = fitness(P2,cost) ;
 
-switch 'roi'
+switch 'keren'
     case 'roi'
         i1 = all(P1(:,1)>=P2(:,2)) ;
         i2 = all(P2(:,1)>=P1(:,2)) ;

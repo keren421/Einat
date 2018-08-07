@@ -32,8 +32,11 @@ while it<maxit
         MT = WT ;
         k = randi(K) ; % chose number of antibiotic to mutate
         
-        if WT(
-        p = (rand>Mut_prod) + 1 ; % choose mutating production or resistance
+        if MT(k,1)<MT(k,2)
+            p = 1;
+        else
+            p = (rand>Mut_prod) + 1 ; % choose mutating production or resistance
+        end
         
         % mutate
         P0 = MT(k,p) ;
@@ -102,6 +105,7 @@ end
 
 
 function f = fitness(P,cost)
+%any reason to do it with exp or just random choice?
 f = exp(-sum(P(:,1)*cost(1) + P(:,2)*cost(2))) ;
 end
 
