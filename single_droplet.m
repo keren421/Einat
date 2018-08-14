@@ -3,7 +3,7 @@ f1 = fitness(P1,cost) ;
 f2 = fitness(P2,cost) ;
 
 switch 'keren'
-    case 'roi'
+    case 'roy'
         i1 = all(P1(:,1)>=P2(:,2)) ;
         i2 = all(P2(:,1)>=P1(:,2)) ;
         res = f1+f2 ;
