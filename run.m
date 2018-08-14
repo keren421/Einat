@@ -1,8 +1,9 @@
 %% setup
+fig_num = 30;
 switch 1
     case 1
         start_rand = false;
-        N = 2 ; % number of species
+        N = 3 ; % number of species
         K = 1 ; % number of antibiotics
         Cost = [0.5 0.5] ; % resistance and production costs
         Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
@@ -86,7 +87,7 @@ while (it<maxit)&&(i_round<max_rounds)
     if ~mod(t,100000), disp([t,it]); end
 end
 %% plot
-figure(3);clf;
+figure(fig_num);clf;
 for k = 1:K
     subplot(K+1,1,k)
     hold on
@@ -99,3 +100,7 @@ end
 subplot(k+1,1,k+1); hold on
 plot(t_v,improvement,'-');
 
+figure(fig_num+1);clf;
+hold on
+plot(t_v,sum(reshape(Phen_v(k,2,:,:),N,[])),'--')
+title('total prodution')
