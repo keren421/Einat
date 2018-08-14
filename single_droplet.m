@@ -3,6 +3,13 @@ f1 = fitness(P1,cost) ;
 f2 = fitness(P2,cost) ;
 
 switch type
+    case 'roy_old'
+        i1 = all(P1(:,1)>=P2(:,2)) ;
+        i2 = all(P2(:,1)>=P1(:,2)) ;
+        res = f1+f2 ;
+        %why divide by f1+f2?
+        y1 = i1/(i1+i2)/res;
+        y2 = i2/(i1+i2)/res;
     case 'roy'
         i1 = all(P1(:,1)>=P2(:,2)) ;
         i2 = all(P2(:,1)>=P1(:,2)) ;

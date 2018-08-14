@@ -2,7 +2,7 @@
 fig_num = 40;
 switch 2
     case 1
-        eq_type = 'roy'; % 'roy', 'keren' , 'keren_2'
+        eq_type = 'roy'; % 'roy_old', 'roy', 'keren' , 'keren_2'
         start_rand = false;
         N = 2 ; % number of species
         K = 2 ; % number of antibiotics
