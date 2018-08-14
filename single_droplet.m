@@ -1,8 +1,8 @@
-function [y1,y2] = single_droplet(P1,P2,cost)
+function [y1,y2] = single_droplet(P1,P2,cost,type)
 f1 = fitness(P1,cost) ;
 f2 = fitness(P2,cost) ;
 
-switch 'keren'
+switch type
     case 'roy'
         i1 = all(P1(:,1)>=P2(:,2)) ;
         i2 = all(P2(:,1)>=P1(:,2)) ;

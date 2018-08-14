@@ -1,16 +1,18 @@
 %% setup
-fig_num = 30;
-switch 1
+fig_num = 40;
+switch 2
     case 1
+        eq_type = 'roy'; % 'roy', 'keren' , 'keren_2'
         start_rand = false;
-        N = 3 ; % number of species
-        K = 1 ; % number of antibiotics
+        N = 2 ; % number of species
+        K = 2 ; % number of antibiotics
         Cost = [0.5 0.5] ; % resistance and production costs
         Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
         Mut_size = [-0.05 -0.05]; % average size of resistant and production mutations (typically should be <=0)
         Mut_size_std = [0.05 0.05]; % standard deviation of resistant and production mutations
         Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
     case 2
+        eq_type = 'roy'; % 'roy', 'keren' , 'keren_2'
         start_rand = false;
         N = 8 ; 
         K = 4 ; 
@@ -34,7 +36,7 @@ maxit = 1000; %1000 ; % max number of fixations
 t_v = nan(maxit,1) ;
 improvement = nan(maxit,1) ; %saves how beneficial was the mutation
 Phen_v = nan(K,2,N,maxit) ; % keeps all phenotypes versus time
-max_rounds = 1e8;
+max_rounds = 1e6;
 i_round = 0; 
 
 %% run
@@ -62,8 +64,8 @@ while (it<maxit)&&(i_round<max_rounds)
         fMT = 0 ;
         for i = 1:N
             if i~=n
-                fWT = fWT + single_droplet(WT,Phen(:,:,i),Cost) ;
-                fMT = fMT + single_droplet(MT,Phen(:,:,i),Cost) ;
+                fWT = fWT + single_droplet(WT,Phen(:,:,i),Cost,eq_type) ;
+                fMT = fMT + single_droplet(MT,Phen(:,:,i),Cost,eq_type) ;
             end
         end
         
