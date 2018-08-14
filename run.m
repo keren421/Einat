@@ -72,12 +72,12 @@ while (it<maxit)&&(i_round<max_rounds)
         % fixation
         switch 'only_beneficial'
             case 'only_beneficial'
-                thereshold = fMT/fWT - 1;
+                threshold = fMT/fWT - 1;
             case 'allow_negative'
                 x = fMT/fWT;
-                thereshold = 0.5*(1+tanh(10*(x-1.15)));
+                threshold = 0.5*(1+tanh(10*(x-1.15)));
         end
-        if rand < thereshold
+        if rand < threshold
             it = it + 1 ;
             Phen(:,:,n) = MT ;
             Phen_v(:,:,:,it) = Phen ;
