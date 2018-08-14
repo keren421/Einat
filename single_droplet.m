@@ -13,8 +13,6 @@ switch type
     case 'roy'
         i1 = all(P1(:,1)>=P2(:,2)) ;
         i2 = all(P2(:,1)>=P1(:,2)) ;
-        res = f1+f2 ;
-        %why divide by f1+f2?
         y1 = i1/(i1+i2)*f1 ;
         y2 = i2/(i1+i2)*f2 ;
     case 'keren'
@@ -27,6 +25,10 @@ switch type
         growth2 = f2 - min(sum(max(P1(:,2)+P2(:,2)-P2(:,1),0)),f2);
         y1 = growth1/(growth1+growth2);
         y2 = growth2/(growth1+growth2);
+end
+
+if (y1<0)||(y2<0)
+    print 'Bug!'
 end
 end
 
