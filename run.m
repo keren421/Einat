@@ -1,12 +1,12 @@
 %% setup
-fig_num = 20;
+fig_num = 60;
 switch 1
     case 1
-        eq_type = 'keren'; % 'roy_old', 'roy', 'keren' , 'keren_2'
+        eq_type = 'loser_remains_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
         start_rand = false;
         N = 3 ; % number of species
-        K = 1 ; % number of antibiotics
-        Cost = [0.5 0.5] ; % resistance and production costs
+        K = 2 ; % number of antibiotics
+        Cost = [0.05 0.5] ; % resistance and production costs
         Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
         Mut_size = [-0.05 -0.05]; % average size of resistant and production mutations (typically should be <=0)
         Mut_size_std = [0.05 0.05]; % standard deviation of resistant and production mutations
@@ -70,13 +70,7 @@ while (it<maxit)&&(t<max_rounds)
         end
         
         % fixation
-        switch 'only_beneficial'
-            case 'only_beneficial'
-                threshold = fMT/fWT - 1;
-            case 'allow_negative'
-                x = fMT/fWT;
-                threshold = 0.5*(1+tanh(10*(x-1.15)));
-        end
+        threshold = fMT/fWT - 1;
         if rand < threshold
             it = it + 1 ;
             Phen(:,:,n) = MT ;
@@ -86,12 +80,12 @@ while (it<maxit)&&(t<max_rounds)
         end
     end
     t = t + 1 ;
-    if ~mod(t,100000), disp([t,it]); end
+    if ~mod(t,500), disp([t,it]); end
 end
 %% plot
 figure(fig_num);clf;
 for k = 1:K
-    subplot(K+1,1,k)
+    subplot(K,1,k)
     hold on
     plot(t_v,reshape(Phen_v(k,1,:,:),N,[]),'-');
     ax = gca;
@@ -99,8 +93,6 @@ for k = 1:K
     plot(t_v,reshape(Phen_v(k,2,:,:),N,[]),'--')
     title(sprintf('-Resistant, --Production, Antibiotic #%g',k))
 end
-subplot(k+1,1,k+1); hold on
-plot(t_v,improvement,'-');
 
 figure(fig_num+1);clf;
 hold on

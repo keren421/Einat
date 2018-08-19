@@ -38,19 +38,21 @@ function [y1,y2] = single_droplet(P1,P2,cost,type)
         return;
     end
         
-    switch type
+    switch 'winner_gets_all'
         case 'winner_gets_all'
             pop_size(losing_bacteria) = 0;
             pop_size(winning_bacteria) = 1;
-        case 'loser_dies_winner_gets_rest'
-            pop_size(winning_bacteria) = 1 - pop_size(losing_bacteria);
-            pop_size(losing_bacteria) = 0;
-        case 'loser_remains_winner_gets_rest'
-            pop_size(winning_bacteria) = 1 - pop_size(losing_bacteria);
+        case 'loser_dies_
+            pop_size(winning_bacteria) = 1 ;
+            pop_size(winning_bacteria) = 1;
+            
+    if losing_bacteria == 1
+        y1 = pop_size(1);
+        y2 = 1-y1;
+    else
+        y2 = pop_size(2);
+        y1 = 1-y2;
     end
-    
-    y1 = pop_size(1);
-    y2 = pop_size(2);
 end
 
 
