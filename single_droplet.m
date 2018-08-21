@@ -1,7 +1,7 @@
-function [y1,y2] = single_droplet(P1,P2,cost,type)
+function [y1,y2] = single_droplet(P1,P2,cost,type_resist,type)
     f1 = fitness(P1,cost) ;
     f2 = fitness(P2,cost) ;
-    switch 'plus'
+    switch type_resist
         case 'max'
             R1 = max(P1(:,2),P1(:,1));
             R2 = max(P2(:,2),P2(:,1));

@@ -2,16 +2,17 @@
 fig_num = 70;
 switch 1
     case 1
-        eq_type = 'loser_remains_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+        eq_type = 'winner_gets_all'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+        type_resist = 'plus'; % max , plus, resist
         start_rand = false;
-        N = 3 ; % number of species
-        K = 2 ; % number of antibiotics
+        N = 2 ; % number of species
+        K = 1 ; % number of antibiotics
         Cost = [0.05 0.5] ; % resistance and production costs
         Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
         Mut_size = [-0.05 -0.05]; % average size of resistant and production mutations (typically should be <=0)
         Mut_size_std = [0.05 0.05]; % standard deviation of resistant and production mutations
         Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
-        maxit = 10000; %1000 ; % max number of fixations 
+        maxit = 1000; %1000 ; % max number of fixations 
     case 2
         eq_type = 'keren'; % 'roy', 'keren' , 'keren_2'
         start_rand = false;
@@ -64,8 +65,8 @@ while (it<maxit)&&(t<max_rounds)
         fMT = 0 ;
         for i = 1:N
             if i~=n
-                fWT = fWT + single_droplet(WT,Phen(:,:,i),Cost,eq_type) ;
-                fMT = fMT + single_droplet(MT,Phen(:,:,i),Cost,eq_type) ;
+                fWT = fWT + single_droplet(WT,Phen(:,:,i),Cost,type_resist, eq_type) ;
+                fMT = fMT + single_droplet(MT,Phen(:,:,i),Cost,type_resist, eq_type) ;
             end
         end
         
