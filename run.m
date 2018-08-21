@@ -6,12 +6,12 @@ switch 1
         type_resist = 'plus'; % max , plus, resist
         start_rand = false;
         N = 2 ; % number of species
-        K = 1 ; % number of antibiotics
-        Cost = [0.01 0.5] ; % resistance and production costs
+        K = 2 ; % number of antibiotics
+        Cost = [0.1 0.5] ; % resistance and production costs
         Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
         Mut_size = [-0.05 -0.05]; % average size of resistant and production mutations (typically should be <=0)
         Mut_size_std = [0.05 0.05]; % standard deviation of resistant and production mutations
-        Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
+        Mut_0 = [0.01 0.01] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
         maxit = 1000; %1000 ; % max number of fixations 
     case 2
         eq_type = 'keren'; % 'roy', 'keren' , 'keren_2'
