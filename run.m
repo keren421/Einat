@@ -1,11 +1,11 @@
 %% setup
-fig_num = 60;
+fig_num = 70;
 switch 1
     case 1
         eq_type = 'loser_remains_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
         start_rand = false;
-        N = 2 ; % number of species
-        K = 1 ; % number of antibiotics
+        N = 3 ; % number of species
+        K = 2 ; % number of antibiotics
         Cost = [0.05 0.5] ; % resistance and production costs
         Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
         Mut_size = [-0.05 -0.05]; % average size of resistant and production mutations (typically should be <=0)

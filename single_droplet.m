@@ -1,8 +1,20 @@
 function [y1,y2] = single_droplet(P1,P2,cost,type)
     f1 = fitness(P1,cost) ;
     f2 = fitness(P2,cost) ;
-    R1 = max(P1(:,2),P1(:,1));
-    R2 = max(P2(:,2),P2(:,1));
+    switch 'plus'
+        case 'max'
+            R1 = max(P1(:,2),P1(:,1));
+            R2 = max(P2(:,2),P2(:,1));
+        case 'plus'
+            R1 = P1(:,2) + P1(:,1);
+            R2 = P2(:,2) + P2(:,1);
+        case 'resist'
+            R1 = P1(:,1);
+            R2 = P2(:,1);
+    end
+            
+            
+            
     num_antibiotics = length(P1(:,1));
     max_t = 20;
     bacteria_growth = @(t,y) [f1*y(1)*(1-y(1)-y(2)); ...
