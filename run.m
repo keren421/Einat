@@ -7,7 +7,7 @@ switch 1
         start_rand = false;
         N = 2 ; % number of species
         K = 1 ; % number of antibiotics
-        Cost = [0.05 0.5] ; % resistance and production costs
+        Cost = [0.01 0.5] ; % resistance and production costs
         Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
         Mut_size = [-0.05 -0.05]; % average size of resistant and production mutations (typically should be <=0)
         Mut_size_std = [0.05 0.05]; % standard deviation of resistant and production mutations
