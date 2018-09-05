@@ -1,8 +1,8 @@
 %% setup
-fig_num = 70;
+fig_num = 60;
 switch 1
     case 1
-        eq_type = 'winner_gets_all'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+        eq_type = 'loser_remains_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
         type_resist = 'plus'; % max , plus, resist
         start_rand = false;
         N = 2 ; % number of species
