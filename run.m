@@ -2,28 +2,29 @@
 fig_num = 60;
 switch 1
     case 1
-        eq_type = 'loser_remains_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
-        type_resist = 'plus'; % max , plus, resist
+        eq_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+        type_resist = 'max'; % max , plus, resist
         start_rand = false;
         N = 2 ; % number of species
         K = 2 ; % number of antibiotics
-        Cost = [0.1 0.5] ; % resistance and production costs
+        Cost = [0.05 0.5] ; % resistance and production costs
         Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
-        Mut_size = [-0.05 -0.05]; % average size of resistant and production mutations (typically should be <=0)
-        Mut_size_std = [0.05 0.05]; % standard deviation of resistant and production mutations
+        Mut_size = [-0.2 -0.2]; % average size of resistant and production mutations (typically should be <=0)
+        Mut_size_std = [0.2 0.2]; % standard deviation of resistant and production mutations
         Mut_0 = [0.01 0.01] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
         maxit = 1000; %1000 ; % max number of fixations 
     case 2
-        eq_type = 'keren'; % 'roy', 'keren' , 'keren_2'
+        eq_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+        type_resist = 'max'; % max , plus, resist
         start_rand = false;
-        N = 8 ; 
-        K = 4 ; 
-        Cost = [0.5 0.5] ; 
-        Mut_prod = 0.5; 
-        Mut_size = [0 0]; 
-        Mut_size_std = [0.05 0.05]; 
-        Mut_0 = [0 0] ;      
-        maxit = 10000; %1000 ; % max number of fixations 
+        N = 8 ; % number of species
+        K = 4 ; % number of antibiotics
+        Cost = [0.05 0.5] ; % resistance and production costs
+        Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
+        Mut_size = [-0.2 -0.2]; % average size of resistant and production mutations (typically should be <=0)
+        Mut_size_std = [0.2 0.2]; % standard deviation of resistant and production mutations
+        Mut_0 = [0.01 0.01] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
+        maxit = 1000; %1000 ; % max number of fixations 
 end
 
 %%

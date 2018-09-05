@@ -5,7 +5,7 @@ switch 1
         K = 1 ; % number of antibiotics
         Cost = [0.05 0.5] ; % resistance and production costs
         Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
-        Mut_size = [0 0]; % average size of resistant and production mutations (typically should be <=0)
+        Mut_size = [-0.05 -0.05]; % average size of resistant and production mutations (typically should be <=0)
         Mut_size_std = [0.05 0.05]; % standard deviation of resistant and production mutations
         Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
     case 2
@@ -21,9 +21,9 @@ end
 Phen = zeros(K,2,N) ; %1:Res, 2:Production
 t = 0 ; % number of cycles
 it = 0 ; % number of fixation events
-maxit = 10000 ; % max number of fixations 
-t_v = zeros(maxit,1) ;
-Phen_v = zeros(K,2,N,maxit) ; % keeps all phenotypes versus time
+maxit = 100000 ; % max number of fixations 
+t_v = nan(maxit,1) ;
+Phen_v = nan(K,2,N,maxit) ; % keeps all phenotypes versus time
  
 %% run
 while it<maxit
@@ -44,8 +44,8 @@ while it<maxit
         fMT = 0 ;
         for i = 1:N
             if i~=n
-                fWT = fWT + single_droplet1(WT,Phen(:,:,i),Cost) ;
-                fMT = fMT + single_droplet1(MT,Phen(:,:,i),Cost) ;
+                fWT = fWT + single_droplet_roy(WT,Phen(:,:,i),Cost) ;
+                fMT = fMT + single_droplet_roy(MT,Phen(:,:,i),Cost) ;
             end
         end
          
@@ -73,13 +73,12 @@ for k = 1:K
 end
  
 %%
-function [y1,y2] = single_droplet1(P1,P2,cost)
+function [y1,y2] = single_droplet_roy(P1,P2,cost)
 i1 = all(P1(:,1)>=P2(:,2)) ;
 i2 = all(P2(:,1)>=P1(:,2)) ;
  
 f1 = fitness(P1,cost) ;
 f2 = fitness(P2,cost) ;
- 
 % calculate the final density in the drop 
 % (there are different options here. need some thinking)
  
