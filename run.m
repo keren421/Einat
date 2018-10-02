@@ -1,9 +1,10 @@
 %% setup
-fig_num = 60;
-switch 1
+fig_num = 100;
+switch 2
     case 1
-        eq_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+        scoring_type = 'winner_gets_all'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
         type_resist = 'max'; % max , plus, resist
+        decay = 1;
         start_rand = false;
         N = 2 ; % number of species
         K = 2 ; % number of antibiotics
@@ -14,8 +15,9 @@ switch 1
         Mut_0 = [0.01 0.01] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
         maxit = 1000; %1000 ; % max number of fixations 
     case 2
-        eq_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+        scoring_type = 'winner_gets_all'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
         type_resist = 'max'; % max , plus, resist
+        ecay = 1;
         start_rand = false;
         N = 8 ; % number of species
         K = 4 ; % number of antibiotics
@@ -66,8 +68,8 @@ while (it<maxit)&&(t<max_rounds)
         fMT = 0 ;
         for i = 1:N
             if i~=n
-                fWT = fWT + single_droplet(WT,Phen(:,:,i),Cost,type_resist, eq_type) ;
-                fMT = fMT + single_droplet(MT,Phen(:,:,i),Cost,type_resist, eq_type) ;
+                fWT = fWT + single_droplet(WT,Phen(:,:,i),Cost,type_resist, scoring_type, decay) ;
+                fMT = fMT + single_droplet(MT,Phen(:,:,i),Cost,type_resist, scoring_type, decay) ;
             end
         end
         

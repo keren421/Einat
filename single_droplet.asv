@@ -37,24 +37,23 @@ function [y1,y2] = single_droplet(P1,P2,cost, type_resist, type_scoring, antibio
     % try rewtitting as d[logy]/dt
     [t,y] = ode45(bacteria_growth,[0 max_t],[intial_pop; intial_pop]);
     
-    t_death = inf;
+    t_min = inf;
     overall_losing_bacteria = nan;
     pop_size = y(end,:) ;
     for i = 1:num_antibiotics
+        %concentration = cumtrapz(t,y(:,1)* P1(i,2) + y(:,2)*P2(i,2));
         if antibiotic_decay
             concentration = y(:,1)* P1(i,2) + y(:,2)*P2(i,2);
         else
-            concentration = cumtrapz(t,y(:,1)* P1(i,2) + y(:,2)*P2(i,2));
-        end
+            
         [resistance, most_sensitive] = min([R1(i),R2(i)]);
         I = find(concentration>resistance,1,'first');
-        if ~isempty(I) && t(I)<t_death
-            t_death = t(I);
+        if ~isempty(I) && t(I)<t_min
+            t_min = t(I);
             pop_size = y(I,:);
             overall_losing_bacteria = most_sensitive;
         end
     end
-    
     if ~isnan(overall_losing_bacteria)
         overall_winning_bacteria = 3 - overall_losing_bacteria ;
         switch type_scoring
@@ -68,7 +67,6 @@ function [y1,y2] = single_droplet(P1,P2,cost, type_resist, type_scoring, antibio
                 pop_size(overall_winning_bacteria) = 1 - pop_size(overall_losing_bacteria);
         end
     end
-    
     y1 = pop_size(1);
     y2 = pop_size(2);
 end
