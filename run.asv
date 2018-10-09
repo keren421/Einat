@@ -1,5 +1,5 @@
 %% setup
-scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+scoring_type = 'winner_gets_all'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
 type_resist = 'max'; % max , plus, resist
 decay = 1;
 start_rand = false;
@@ -14,17 +14,10 @@ switch 1
         fig_num = 110;
         N = 2 ; % number of species
         K = 2 ; % number of antibiotics        
-        maxit = 1000; % max number of fixations 
     case 2
         fig_num = 100;
         N = 8 ; % number of species
         K = 4 ; % number of antibiotics
-        maxit = 4000;% max number of fixations 
-    case 3
-        fig_num = 120;
-        N = 8 ; % number of species
-        K = 2 ; % number of antibiotics
-        maxit = 4000;% max number of fixations 
 end
 
 %%
@@ -82,15 +75,8 @@ while (it<maxit)&&(t<max_rounds)
     t = t + 1 ;
     if ~mod(t,500), disp([t,it]); end
     if ~mod(t,50000)
-        plotPhen(fig_num, K, N, Phen_v, t_v)
+        plotPhen(fig_num, K, Phen_v)
     end
 end
-if t>=max_rounds
-    it = it + 1 ;
-    Phen(:,:,n) = MT ;
-    Phen_v(:,:,:,it) = Phen ;
-    t_v(it,1) = t ;
-    improvement(it,1) = fMT/fWT ;
-end
-plotPhen(fig_num, K, N, Phen_v, t_v)
+plotPhen(fig_num, K, Phen_v,t_v)
 %% plot
