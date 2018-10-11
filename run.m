@@ -1,15 +1,15 @@
 %% setup
-scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+scoring_type = 'loser_remains_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
 type_resist = 'max'; % max , plus, resist
-decay = 1;
+decay = 0;
 start_rand = false;
 Cost = [0.05 0.5] ; % resistance and production costs
 Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
 Mut_size = [-0.2 -0.2]; % average size of resistant and production mutations (typically should be <=0)
 Mut_size_std = [0.2 0.2]; % standard deviation of resistant and production mutations
-Mut_0 = [0.0 0.0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
+Mut_0 = [0.1 0.1] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 maxit = 1000; %1000 ; % max number of fixations 
-switch 1
+switch 2
     case 1
         fig_num = 110;
         N = 2 ; % number of species
@@ -49,7 +49,6 @@ while (it<maxit)&&(t<max_rounds)
         MT = WT ;
         k = randi(K) ; % chose number of antibiotic to mutate
         p = (rand>Mut_prod) + 1 ; % choose mutating production or resistance
-
         % mutate
         P0 = MT(k,p) ;
         P0 = P0 + Mut_size(p) + Mut_size_std(p)*randn ; 
@@ -68,7 +67,7 @@ while (it<maxit)&&(t<max_rounds)
         
         % fixation
         threshold = fMT/fWT - 1;
-%         if (fMT+eps)/(fWT+eps)>1
+%         if fMT>=fWT
 %             1
 %         end
         if rand < threshold
