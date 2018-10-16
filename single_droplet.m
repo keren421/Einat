@@ -1,4 +1,4 @@
-function [y1,y2] = single_droplet(P1,P2,cost, type_resist, type_scoring, antibiotic_decay)
+function [y1,y2,production_resistance_1,production_resistance_2] = single_droplet(P1,P2,cost, type_resist, type_scoring, antibiotic_decay)
     eps = 1e-6; %integral is computed until population 1-eps 
     intial_pop = 1e-3;
     
@@ -6,20 +6,20 @@ function [y1,y2] = single_droplet(P1,P2,cost, type_resist, type_scoring, antibio
     g2 = growth_rate(P2,cost) ;
     
     if antibiotic_decay
-        production_resistance_1 = P1(:,1);
-        production_resistance_2 = P2(:,1);
+        production_resistance_1 = P1(:,2);
+        production_resistance_2 = P2(:,2);
     else
-        production_resistance_1 = 1/g1 * P1(:,1)*log(1/(2*eps));
-        production_resistance_2 = 1/g2 * P2(:,1)*log(1/(2*eps));
+        production_resistance_1 = 1/g1 * P1(:,2)*log(1/(2*eps));
+        production_resistance_2 = 1/g2 * P2(:,2)*log(1/(2*eps));
     end
             
     switch type_resist
         case 'max'
-            R1 = max(P1(:,2),production_resistance_1);
-            R2 = max(P2(:,2),production_resistance_2);
+            R1 = max(P1(:,1),production_resistance_1);
+            R2 = max(P2(:,1),production_resistance_2);
         case 'plus'
-            R1 = P1(:,2) + production_resistance_1;
-            R2 = P2(:,2) + production_resistance_2;
+            R1 = P1(:,1) + production_resistance_1;
+            R2 = P2(:,1) + production_resistance_2;
         case 'resist'
             R1 = P1(:,1);
             R2 = P2(:,1);

@@ -1,7 +1,7 @@
 %% setup
-scoring_type = 'winner_gets_all'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
 type_resist = 'max'; % max , plus, resist
-decay = 1;
+decay = 0;
 start_rand = false;
 Cost = [0.05 0.5] ; % resistance and production costs
 Mut_prod = 0.5; % chance of a mutation affecting production 1-Pprod chance of affecting resistance ;
@@ -44,9 +44,9 @@ i_round = 0;
 
 %% run
 cost_matrix = nan(N,N);
-production_resistance = nan(K,N);
+production_resistance = nan(k,N);
 for i = 1:N
-    for j= 1:i-1
+    for j= 1:i
         [y_i,y_j,pr_i,pr_j] = single_droplet(Phen(:,:,i),Phen(:,:,j),Cost,type_resist, scoring_type, decay);
         cost_matrix(i,j) = y_i;
         cost_matrix(j,i) = y_j;
@@ -67,9 +67,6 @@ while (it<maxit)&&(t<max_rounds)
         P0 = P0 * (rand>Mut_0(p));
         MT(k,p) = max(P0,0) ;
       
-        if all(all(WT == MT))
-            continue;
-        end
         % calc average fitness
         fWT = 0 ;
         fMT = 0 ;
@@ -77,8 +74,7 @@ while (it<maxit)&&(t<max_rounds)
         M_production_resistance = production_resistance;
         for i = 1:N
             if i~=n
-                fWT = fWT + cost_matrix(n,i);
-                
+                fWT = fWT + cost_matrix(i,j);
                 [y_i,y_j,pr_i,~] = single_droplet(MT,Phen(:,:,i),Cost,type_resist, scoring_type, decay);
                 M_cost_matrix(n,i) = y_i;
                 M_cost_matrix(i,n) = y_j;
@@ -99,8 +95,6 @@ while (it<maxit)&&(t<max_rounds)
             Phen_v(:,:,:,it) = Phen ;
             t_v(it,1) = t ;
             improvement(it,1) = fMT/fWT ;
-            cost_matrix = M_cost_matrix;
-            production_resistance = M_production_resistance;
         end
     end
     t = t + 1 ;
