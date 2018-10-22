@@ -1,5 +1,5 @@
 %% setup
-scoring_type = 'loser_remains_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
+scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
 type_resist = 'max'; % max , plus, resist
 decay = 1;
 start_rand = false;
@@ -9,7 +9,8 @@ Mut_size = [-0.2 -0.2]; % average size of resistant and production mutations (ty
 Mut_size_std = [0.2 0.2]; % standard deviation of resistant and production mutations
 Mut_0 = [0.1 0.1] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 maxit = 1000; %1000 ; % max number of fixations 
-switch 2
+time_limit = 10;
+switch 3
     case 1
         fig_num = 100;
         N = 2 ; % number of species
@@ -47,7 +48,7 @@ cost_matrix = nan(N,N);
 production_resistance = nan(K,N);
 for i = 1:N
     for j= 1:i-1
-        [y_i,y_j,pr_i,pr_j] = single_droplet(Phen(:,:,i),Phen(:,:,j),Cost,type_resist, scoring_type, decay);
+        [y_i,y_j,pr_i,pr_j] = single_droplet(Phen(:,:,i),Phen(:,:,j),Cost,type_resist, scoring_type, decay, time_limit);
         cost_matrix(i,j) = y_i;
         cost_matrix(j,i) = y_j;
         production_resistance(:,i) = pr_i;
@@ -79,7 +80,7 @@ while (it<maxit)&&(t<max_rounds)
             if i~=n
                 fWT = fWT + cost_matrix(n,i);
                 
-                [y_i,y_j,pr_i,~] = single_droplet(MT,Phen(:,:,i),Cost,type_resist, scoring_type, decay);
+                [y_i,y_j,pr_i,~] = single_droplet(MT,Phen(:,:,i),Cost,type_resist, scoring_type, decay, time_limit);
                 M_cost_matrix(n,i) = y_i;
                 M_cost_matrix(i,n) = y_j;
                 M_production_resistance(:,n) = pr_i;

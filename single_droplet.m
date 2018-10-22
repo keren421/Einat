@@ -1,4 +1,4 @@
-function [y1,y2,production_resistance_1,production_resistance_2] = single_droplet(P1,P2,cost, type_resist, type_scoring, antibiotic_decay)
+function [y1,y2,production_resistance_1,production_resistance_2] = single_droplet(P1,P2,cost, type_resist, type_scoring, antibiotic_decay, time_limit)
     eps = 1e-6; %integral is computed until population 1-eps 
     intial_pop = 1e-3;
     
@@ -27,10 +27,15 @@ function [y1,y2,production_resistance_1,production_resistance_2] = single_drople
                     
     num_antibiotics = length(P1(:,1));
     
-    find_steady_t = @(lambda, eps, n0) (1/lambda)*log((1+n0*eps-eps-n0)/(n0*eps));
-    t1 = find_steady_t(g1, eps, intial_pop);
-    t2 = find_steady_t(g2, eps, intial_pop);
-    max_t = min(t1,t2) ;
+    if isnan(time_limit)
+        find_steady_t = @(lambda, eps, n0) (1/lambda)*log((1+n0*eps-eps-n0)/(n0*eps));
+        t1 = find_steady_t(g1, eps, intial_pop);
+        t2 = find_steady_t(g2, eps, intial_pop);
+        max_t = min(t1,t2) ;
+    else
+        delta = 1- time_limit;
+        max_t = log((1+intial_pop*delta-delta-intial_pop)/(intial_pop*delta));
+    end
     
     bacteria_growth = @(t,y) [g1*y(1)*(1-y(1)-y(2)); ...
                               g2*y(2)*(1-y(1)-y(2))];
@@ -59,13 +64,36 @@ function [y1,y2,production_resistance_1,production_resistance_2] = single_drople
         overall_winning_bacteria = 3 - overall_losing_bacteria ;
         switch type_scoring
             case 'winner_gets_all'
+                if isnan(time_limit)
+                    pop_size(overall_winning_bacteria) = 1;
+                else
+                    g = [g1, g2];
+                    g = g(overall_winning_bacteria);
+                    start_pop = pop_size(overall_winning_bacteria);
+                    pop_size(overall_winning_bacteria) = 1/(1+((1-start_pop)/start_pop)*exp(-g*(max_t-t_death)));
+                end
                 pop_size(overall_losing_bacteria) = 0;
-                pop_size(overall_winning_bacteria) = 1;
             case 'loser_dies_winner_gets_rest'
-                pop_size(overall_winning_bacteria) = 1 - pop_size(overall_losing_bacteria);
+                if isnan(time_limit)
+                    pop_size(overall_winning_bacteria) = 1 - pop_size(overall_losing_bacteria);
+                else
+                    g = [g1, g2];
+                    g = g(overall_winning_bacteria);
+                    start_pop = pop_size(overall_winning_bacteria);
+                    K = 1 - pop_size(overall_losing_bacteria);
+                    pop_size(overall_winning_bacteria) = K/(1+((K-start_pop)/start_pop)*exp(-g*(max_t-t_death)));
+                end
                 pop_size(overall_losing_bacteria) = 0;
             case 'loser_remains_winner_gets_rest'
-                pop_size(overall_winning_bacteria) = 1 - pop_size(overall_losing_bacteria);
+                if isnan(time_limit)
+                    pop_size(overall_winning_bacteria) = 1 - pop_size(overall_losing_bacteria);
+                else
+                    g = [g1, g2];
+                    g = g(overall_winning_bacteria);
+                    start_pop = pop_size(overall_winning_bacteria);
+                    K = 1 - pop_size(overall_losing_bacteria);
+                    pop_size(overall_winning_bacteria) = K/(1+((K-start_pop)/start_pop)*exp(-g*(max_t-t_death)));
+                end   
         end
     end
     
