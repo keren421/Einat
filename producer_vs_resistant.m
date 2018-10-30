@@ -3,13 +3,13 @@ scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_w
 type_resist = 'max'; % max , plus, resist
 decay = 1;
 start_rand = false;
-Cost = [0.05 0.1] ; % resistance and production costs
-Mut_size = [-0.2 -0.2]; % average size of resistant and production mutations (typically should be <=0)
-Mut_size_std = [0.2 0.2]; % standard deviation of resistant and production mutations
-Mut_0 = [0.1 0.1] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
+Cost = [0.005 0.01] ; % resistance and production costs
+Mut_size = [0 -0.05]; % average size of resistant and production mutations (typically should be <=0)
+Mut_size_std = [0.1 0.1]; % standard deviation of resistant and production mutations
+Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 maxit = 1000; %1000 ; % max number of fixations 
-time_limit = 0.8;
-switch 2
+time_limit = 0.99;
+switch 4
     case 1
         fig_num = 100;
         N = 2 ; % number of resistants       
@@ -18,6 +18,14 @@ switch 2
         fig_num = 110;
         N = 3 ; % number of resistants       
         maxit = 1000; % max number of fixations 
+    case 3
+        fig_num = 120;
+        N = 5 ; % number of resistants       
+        maxit = 1000; % max number of fixations 
+    case 4
+        fig_num = 130;
+        N = 8 ; % number of resistants       
+        maxit = 4000; % max number of fixations 
 end
 
 %%
@@ -49,7 +57,7 @@ for i = 1:N
 end
 
 while (it<maxit)&&(t<max_rounds)
-    for n = randperm(N)
+    for n = randi(N,1,N) %randperm(N)
         WT = Phen(:,:,n) ;
         MT = WT ;
         % mutate

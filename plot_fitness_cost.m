@@ -1,12 +1,12 @@
-Cost = [0.05 0.1];
-time_limit = nan;
+Cost = [0.005 0.01];
+time_limit = 0.99;
 scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
-production = 0:0.01:2;
-resistance = 0:0.01:1;
+production = 0.0:0.01:1;
+resistance = 0.0:0.01:1;
 
 run_name = 'loser_remains_time_limit_10';
 save_file = 0;
-fig_num = 11;
+fig_num = 15;
 %%
 decay = 1;
 producer = zeros(1,2);
