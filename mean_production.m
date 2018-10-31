@@ -9,6 +9,8 @@ run_type = nan(length(lines),1);
 for i = 1:length(lines)
     temp_t = lines(i).XData;
     temp_p = lines(i).YData;
+    temp_p = temp_p(~isnan(temp_p));
+    temp_t = temp_t(~isnan(temp_p));
     average_production(i) = trapz(temp_t,temp_p)/max(temp_t);
     run_type(i) = str2double(lines(i).DisplayName);
 end
