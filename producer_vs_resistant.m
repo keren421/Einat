@@ -9,7 +9,7 @@ Mut_size_std = [0.1 0.1]; % standard deviation of resistant and production mutat
 Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 maxit = 1000; %1000 ; % max number of fixations 
 time_limit = 0.99;
-switch 4
+switch 1
     case 1
         fig_num = 100;
         N = 2 ; % number of resistants       
@@ -45,6 +45,9 @@ i_round = 0;
 
 %% run
 cost_matrix = nan(N,N);
+weight_matrix = nan(1,N);
+weight_matrix(1,1) = 0.5;
+weight_matrix(1,2:end) = 0.5/(N-1);
 production_resistance = nan(1,N);
 for i = 1:N
     for j= 1:i-1
@@ -81,14 +84,14 @@ while (it<maxit)&&(t<max_rounds)
         M_production_resistance = production_resistance;
         for i = 1:N
             if i~=n
-                fWT = fWT + cost_matrix(n,i);
+                fWT = fWT + weight_matrix(i)*cost_matrix(n,i);
 
                 [y_i,y_j,pr_i,~] = single_droplet(MT,Phen(:,:,i),Cost,type_resist, scoring_type, decay, time_limit);
                 M_cost_matrix(n,i) = y_i;
                 M_cost_matrix(i,n) = y_j;
                 M_production_resistance(:,n) = pr_i;
 
-                fMT = fMT + y_i;
+                fMT = fMT + weight_matrix(i)*y_i;
             end
         end
 
