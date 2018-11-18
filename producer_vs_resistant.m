@@ -9,75 +9,86 @@ Mut_size_std = [0.1 0.1]; % standard deviation of resistant and production mutat
 Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 maxit = 1000; %1000 ; % max number of fixations 
 time_limit = 0.99;
-switch 2
+switch 5
     case 1
         fig_num = 100;
-        N = 2 ; % number of resistants       
-        maxit = 1000; % max number of fixations 
+        N_P = 1 ; % number of resistants       
+        N_R =1;
+        maxit = 100; % max number of fixations 
     case 2
         fig_num = 110;
-        N = 3 ; % number of resistants       
+        N_P = 1 ; % number of producers 
+        N_R = 2; % number of resistants 
         maxit = 1500; % max number of fixations 
     case 3
         fig_num = 120;
-        N = 5 ; % number of resistants       
+        N_P = 1 ; % number of producers 
+        N_R = 4; % number of resistants     
         maxit = 2500; % max number of fixations 
     case 4
         fig_num = 130;
-        N = 8 ; % number of resistants       
+        N_P = 1 ; % number of producers 
+        N_R = 7; % number of resistants      
         maxit = 4000; % max number of fixations 
     case 5
         fig_num = 140;
-        N = 6 ; % number of resistants       
-        maxit = 1000; % max number of fixations 
+        N_P = 2 ; % number of producers 
+        N_R = 4; % number of resistants     
+        maxit = 300; % max number of fixations 
 end
 
 %%
+N= N_R + N_P;
+
 if start_rand
-    Phen = rand(1,2,N);
+    Phen = rand(N_P,2,N);
 else
-    Phen = zeros(1,2,N) ; %1:Res, 2:Production
+    Phen = zeros(N_P,2,N) ; %1:Res, 2:Production
 end
 
 t = 0 ; % number of cycles
 it = 0 ; % number of fixation events
 t_v = nan(maxit,1) ;
 improvement = nan(maxit,1) ; %saves how beneficial was the mutation
-Phen_v = nan(1,2,N,maxit) ; % keeps all phenotypes versus time
+Phen_v = nan(N_P,2,N,maxit) ; % keeps all phenotypes versus time
 max_rounds = 1e6;
 i_round = 0; 
 
 %% run
 cost_matrix = nan(N,N);
 weight_matrix = nan(1,N);
-weight_matrix(1,1) = 0.5;
-weight_matrix(1,2:end) = 0.5/(N-1);
-production_resistance = nan(1,N);
+weight_matrix(1,1:N_P) = 0.5/(N_P);
+weight_matrix(1,N_P:N) = 0.5/(N_R);
 for i = 1:N
     cost_matrix(i,i) = 0.5;
     for j= 1:i-1
         [y_i,y_j,pr_i,pr_j] = single_droplet(Phen(:,:,i),Phen(:,:,j),Cost,type_resist, scoring_type, decay, time_limit);
         cost_matrix(i,j) = y_i;
         cost_matrix(j,i) = y_j;
-        production_resistance(:,i) = pr_i;
-        production_resistance(:,j) = pr_j;
     end
 end
 
 while (it<maxit)&&(t<max_rounds)
-    for n = randi(N,1,N) %randperm(N)
-        WT = Phen(:,:,n) ;
+    for n = randi(2,1,2) %randperm(N)
+        if n==1
+            cur_n = randi([1, N_P]);
+        else 
+            cur_n = randi([N_P + 1, N]);
+        end
+        WT = Phen(:,:,cur_n) ;
         MT = WT ;
         % mutate
-        if n ==1
+        if cur_n <= N_P
             p = 2; %production
+            k = cur_n;
         else
             p = 1; %resistance
+            k = randi(N_P);
         end
-        P0 = MT(1,p) ;
+        P0 = MT(k,p) ;
         P0 = P0 + Mut_size(p) + Mut_size_std(p)*randn ; 
         P0 = P0 * (rand>Mut_0(p));
-        MT(1,p) = max(P0,0) ;
+        MT(k,p) = max(P0,0) ;
 
         if all(all(WT == MT))
             continue;
@@ -86,15 +97,13 @@ while (it<maxit)&&(t<max_rounds)
         fWT = 0 ;
         fMT = 0 ;
         M_cost_matrix = cost_matrix;
-        M_production_resistance = production_resistance;
         for i = 1:N
-            if i~=n
-                fWT = fWT + weight_matrix(i)*cost_matrix(n,i);
+            if i~=cur_n
+                fWT = fWT + weight_matrix(i)*cost_matrix(cur_n,i);
 
                 [y_i,y_j,pr_i,~] = single_droplet(MT,Phen(:,:,i),Cost,type_resist, scoring_type, decay, time_limit);
-                M_cost_matrix(n,i) = y_i;
-                M_cost_matrix(i,n) = y_j;
-                M_production_resistance(:,n) = pr_i;
+                M_cost_matrix(cur_n,i) = y_i;
+                M_cost_matrix(i,cur_n) = y_j;
 
                 fMT = fMT + weight_matrix(i)*y_i;
             end
@@ -107,25 +116,24 @@ while (it<maxit)&&(t<max_rounds)
     %         end
         if rand < threshold
             it = it + 1 ;
-            Phen(:,:,n) = MT ;
+            Phen(:,:,cur_n) = MT ;
             Phen_v(:,:,:,it) = Phen ;
             t_v(it,1) = t ;
             improvement(it,1) = fMT/fWT ;
             cost_matrix = M_cost_matrix;
-            production_resistance = M_production_resistance;
         end
     end
     t = t + 1 ;
     if ~mod(t,500), disp([t,it]); end
     if ~mod(t,50000)
-        plotPhen(fig_num, 1, N, Phen_v, t_v)
+        plotPhen(fig_num, N_P, N, Phen_v, t_v)
     end
 end
 if t>=max_rounds
     it = it + 1 ;
-    Phen(:,:,n) = MT ;
+    Phen(:,:,cur_n) = MT ;
     Phen_v(:,:,:,it) = Phen ;
     t_v(it,1) = t ;
     improvement(it,1) = fMT/fWT ;
 end
-plotPhen(fig_num, 1, N, Phen_v, t_v)
+plotPhen(fig_num,N_P, N, Phen_v, t_v)
