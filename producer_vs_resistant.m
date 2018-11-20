@@ -9,7 +9,7 @@ Mut_size_std = [0.1 0.1]; % standard deviation of resistant and production mutat
 Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 maxit = 1000; %1000 ; % max number of fixations 
 time_limit = 0.99;
-switch 4
+switch 5
     case 1
         fig_num = 100;
         N_P = 1 ; % number of resistants       
@@ -31,6 +31,11 @@ switch 4
         N_R = 7; % number of resistants      
         maxit = 4000; % max number of fixations 
     case 5
+        fig_num = 140;
+        N_P = 1 ; % number of producers 
+        N_R = 9; % number of resistants      
+        maxit = 10000; % max number of fixations 
+    case 6
         fig_num = 140;
         N_P = 2 ; % number of producers 
         N_R = 4; % number of resistants     
