@@ -1,9 +1,9 @@
-function [y1,y2,production_resistance_1,production_resistance_2] = single_droplet(P1,P2,cost, type_resist, type_scoring, antibiotic_decay, time_limit)
+function [y1,y2,production_resistance_1,production_resistance_2] = single_droplet(P1,P2, g, type_resist, type_scoring, antibiotic_decay, time_limit, growth_curve)
     eps = 1e-6; %integral is computed until population 1-eps 
     intial_pop = 1e-3;
     
-    g1 = growth_rate(P1,cost) ;
-    g2 = growth_rate(P2,cost) ;
+    g1 = g(1) ;
+    g2 = g(2) ;
     
     if antibiotic_decay
         production_resistance_1 = P1(:,2);
@@ -37,10 +37,13 @@ function [y1,y2,production_resistance_1,production_resistance_2] = single_drople
         max_t = log((1+intial_pop*delta-delta-intial_pop)/(intial_pop*delta));
     end
     
-    bacteria_growth = @(t,y) [g1*y(1)*(1-y(1)-y(2)); ...
-                              g2*y(2)*(1-y(1)-y(2))];
+    %bacteria_growth = @(t,y) [g1*y(1)*(1-y(1)-y(2)); ...
+    %                          g2*y(2)*(1-y(1)-y(2))];
     % try rewtitting as d[logy]/dt
-    [t,y] = ode45(bacteria_growth,[0 max_t],[intial_pop; intial_pop]);
+    %[t,y] = ode45(bacteria_growth,[0 max_t],[intial_pop; intial_pop]);
+    
+    t = growth_curve(:,1);
+    y = growth_curve(:,2:3);
     
     t_death = inf;
     overall_losing_bacteria = nan;
@@ -101,8 +104,3 @@ function [y1,y2,production_resistance_1,production_resistance_2] = single_drople
     y2 = pop_size(2);
 end
 
-
-function g = growth_rate(P,cost)
-%any reason to do it with exp or just random choice?
-g = exp(-sum(P(:,1)*cost(1) + P(:,2)*cost(2))) ;
-end

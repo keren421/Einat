@@ -9,12 +9,12 @@ Mut_size_std = [0.1 0.1]; % standard deviation of resistant and production mutat
 Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 maxit = 1000; %1000 ; % max number of fixations 
 time_limit = 0.99;
-switch 5
+switch 4
     case 1
         fig_num = 100;
         N_P = 1 ; % number of resistants       
         N_R =1;
-        maxit = 100; % max number of fixations 
+        maxit = 1000; % max number of fixations 
     case 2
         fig_num = 110;
         N_P = 1 ; % number of producers 
@@ -34,7 +34,7 @@ switch 5
         fig_num = 140;
         N_P = 2 ; % number of producers 
         N_R = 4; % number of resistants     
-        maxit = 300; % max number of fixations 
+        maxit = 3000; % max number of fixations 
 end
 
 %%
@@ -46,12 +46,13 @@ else
     Phen = zeros(N_P,2,N) ; %1:Res, 2:Production
 end
 
+load('saved_profiles\growth_curves_10000.mat')
 t = 0 ; % number of cycles
 it = 0 ; % number of fixation events
 t_v = nan(maxit,1) ;
 improvement = nan(maxit,1) ; %saves how beneficial was the mutation
 Phen_v = nan(N_P,2,N,maxit) ; % keeps all phenotypes versus time
-max_rounds = 1e6;
+max_rounds = 1e8;
 i_round = 0; 
 
 %% run
@@ -62,7 +63,19 @@ weight_matrix(1,N_P:N) = 0.5/(N_R);
 for i = 1:N
     cost_matrix(i,i) = 0.5;
     for j= 1:i-1
-        [y_i,y_j,pr_i,pr_j] = single_droplet(Phen(:,:,i),Phen(:,:,j),Cost,type_resist, scoring_type, decay, time_limit);
+        g1 = growth_rate(Phen(:,:,i), Cost);
+        g2 = growth_rate(Phen(:,:,j), Cost);
+        g = [g1,g2];
+                
+        [fastest_growth, faster_growing] = max(g);
+        growth_ratio = g(3-faster_growing)/g(faster_growing);
+        num_curve = find(r2>=growth_ratio,1,'first');
+                
+        cur_growth = [growth_curves{num_curve,1}*(1/fastest_growth), ...
+                      growth_curves{num_curve,faster_growing+1}, ...
+                      growth_curves{num_curve,4-faster_growing}];
+                
+        [y_i,y_j,~,~] = single_droplet(Phen(:,:,i),Phen(:,:,j),g,type_resist, scoring_type, decay, time_limit, cur_growth);
         cost_matrix(i,j) = y_i;
         cost_matrix(j,i) = y_j;
     end
@@ -100,8 +113,25 @@ while (it<maxit)&&(t<max_rounds)
         for i = 1:N
             if i~=cur_n
                 fWT = fWT + weight_matrix(i)*cost_matrix(cur_n,i);
-
-                [y_i,y_j,pr_i,~] = single_droplet(MT,Phen(:,:,i),Cost,type_resist, scoring_type, decay, time_limit);
+                
+                g1 = growth_rate(MT, Cost);
+                g2 = growth_rate(Phen(:,:,i), Cost);
+                g = [g1,g2];
+                
+                [fastest_growth, faster_growing] = max(g);
+                growth_ratio = g(3-faster_growing)/g(faster_growing);
+                num_curve = find(r2>=growth_ratio,1,'first');
+                
+                cur_growth = [growth_curves{num_curve,1}*(1/fastest_growth), ...
+                              growth_curves{num_curve,faster_growing+1}, ...
+                              growth_curves{num_curve,4-faster_growing}];
+                
+                [y_i,y_j,~,~] = single_droplet(MT,Phen(:,:,i),g,type_resist, scoring_type, decay, time_limit, cur_growth);
+                %[y1,y2,~,~] = single_droplet_with_solver(MT, Phen(:,:,i), g, type_resist, scoring_type, decay, time_limit);
+                
+                %if (y_i ~= y1)||(y_j~=y2)
+                    %g
+                %end
                 M_cost_matrix(cur_n,i) = y_i;
                 M_cost_matrix(i,cur_n) = y_j;
 
@@ -121,11 +151,13 @@ while (it<maxit)&&(t<max_rounds)
             t_v(it,1) = t ;
             improvement(it,1) = fMT/fWT ;
             cost_matrix = M_cost_matrix;
+        else
+            %threshold
         end
     end
     t = t + 1 ;
     if ~mod(t,500), disp([t,it]); end
-    if ~mod(t,50000)
+    if ~mod(t,500000)
         plotPhen(fig_num, N_P, N, Phen_v, t_v)
     end
 end
