@@ -159,8 +159,9 @@ while (it<maxit)&&(t<max_rounds)
         else
             %threshold
         end
+        
+    	t = t + 0.5;
     end
-    t = t + 1 ;
     if ~mod(t,500), disp([t,it]); end
     if ~mod(t,500000)
         plotPhen(fig_num, N_P, N, Phen_v, t_v)

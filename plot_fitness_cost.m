@@ -1,8 +1,8 @@
 Cost = [0.005 0.01];
 time_limit = 0.99;
 scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
-production = 0.0:0.01:1;
-resistance = 0.0:0.01:1;
+production = 0.0:0.01:10;
+resistance = 0.0:0.01:5;
 
 run_name = 'loser_remains_time_limit_10';
 save_file = 0;
@@ -18,17 +18,25 @@ for i_p = 1:length(production)
     for i_r = 1:length(resistance)
         producer(1,2) = production(i_p);
         resistant(1,1) = resistance(i_r);
-        [y_p,y_r,~,~] = single_droplet(producer,resistant,Cost,'max', scoring_type, decay, time_limit);
+        
+        g1 = growth_rate(producer, Cost);
+        g2 = growth_rate(resistant, Cost);
+        g = [g1,g2];
+        
+        [y_p,y_r,~,~] = single_droplet_with_solver(producer,resistant,g,'max', scoring_type, decay, time_limit);
         cost_producer(i_p,i_r) = y_p;
         cost_resistant(i_p,i_r) = y_r;
+        if (y_r~=-1)&&(isnan(resistance_value(i_p)))
+            resistance_value(i_p) = resistance(i_r);
+        end
 %         [y,~,~,~] = single_droplet(producer,zeros(1,2),Cost,'max', scoring_type, decay);
 %         cost_producer(i_p,i_r) = cost_producer(i_p,i_r) + y;
 %         [y,~,~,~] = single_droplet(resistant,zeros(1,2),Cost,'max', scoring_type, decay);
 %         cost_resistant(i_p,i_r) = cost_resistant(i_p,i_r) + y;
     end
 end
-fitness_producer = 2*cost_producer - 1;
-fitness_resistant= 2*cost_resistant - 1;
+fitness_producer = cost_producer;
+fitness_resistant= cost_resistant;
 
 %%
 figure(fig_num); clf;
@@ -48,6 +56,22 @@ title('Resistant Fitness');
 colorbar;
 xlabel('Production');
 ylabel('Resistance');
+%%
+resistance_value = nan(length(production),1);
+for i_p = 1:length(production)
+    for i_r = 1:length(resistance)
+        y_r = cost_resistant(i_p,i_r);
+        if (y_r~=-0)&&(isnan(resistance_value(i_p)))
+            resistance_value(i_p) = resistance(i_r);
+        end
+    end
+end
+figure(); plot(production, resistance_value,'linewidth',2)
+title('Minimal Resistance for Producing Value')
+xlabel('Production');
+ylabel('Minimal Resistance');
+set(gca,'fontsize',14);
+grid on
 
 %%
 if save_file 

@@ -15,13 +15,16 @@ for i = 1:length(lines)
     temp_p = lines(i).YData;
     temp_p = temp_p(~isnan(temp_p));
     temp_t = temp_t(~isnan(temp_p));
+    
+    I = find(diff(temp_t)==0);
+    temp_t(I+1) = temp_t(I) + 0.5;
     run_type(i) = str2double(lines(i).DisplayName);
     
     cum_production = cumtrapz(temp_t,temp_p);
     for j = 1:length(log_dt)
-        mod_t = mod(temp_t,dt(j));
-        [~,indices] = findpeaks(-mod_t);
-        window_mean = (cum_production(indices(2:end)) - cum_production(indices(1:end-1)))./(temp_t(indices(2:end)) - temp_t(indices(1:end-1)));
+        interped_cum_production = interp1(temp_t,cum_production,0:dt(j):max(temp_t));
+        interped_cum_production(1) = 0;
+        window_mean = diff(interped_cum_production)./dt(j);
         average_production(i,j) = mean(window_mean);
         var_production(i,j) = std(window_mean);
     end
