@@ -1,5 +1,5 @@
-needed_line = 'data11';
-
+needed_line = '1';
+draw_r = 0;
 h = gcf;
 legend
 axesObjs = get(h, 'Children');
@@ -13,8 +13,10 @@ for i = 1:length(lines)
     if strcmp(lines(i).DisplayName, needed_line)
         t = lines(i).XData;
         p = lines(i).YData;
-        r = -0.01271*p.^2 +0.5013*p;
-        hold on
-        plot(t,r,'k','displayname','minimal resistance')
+        if draw_r
+            r = -0.01271*p.^2 +0.5013*p;
+            hold on
+            plot(t,r,'k','displayname','minimal resistance')
+        end
     end
 end
