@@ -19,24 +19,24 @@ switch 5
         fig_num = 110;
         N_P = 1 ; % number of producers 
         N_R = 2; % number of resistants 
-        maxit = 1500; % max number of fixations 
+        maxit = 2000; % max number of fixations 
     case 3
         fig_num = 120;
         N_P = 1 ; % number of producers 
         N_R = 4; % number of resistants     
-        maxit = 2500; % max number of fixations 
+        maxit = 4000; % max number of fixations 
     case 4
         fig_num = 130;
         N_P = 1 ; % number of producers 
         N_R = 7; % number of resistants      
-        maxit = 4000; % max number of fixations 
+        maxit = 7000; % max number of fixations 
     case 5
         fig_num = 140;
         N_P = 1 ; % number of producers 
         N_R = 9; % number of resistants      
-        maxit = 10000; % max number of fixations 
+        maxit = 500; % max number of fixations 
     case 6
-        fig_num = 140;
+        fig_num = 145;
         N_P = 2 ; % number of producers 
         N_R = 4; % number of resistants     
         maxit = 3000; % max number of fixations 
@@ -75,7 +75,7 @@ for i = 1:N
         [fastest_growth, faster_growing] = max(g);
         growth_ratio = g(3-faster_growing)/g(faster_growing);
         num_curve = find(r2>=growth_ratio,1,'first');
-                
+        
         cur_growth = [growth_curves{num_curve,1}*(1/fastest_growth), ...
                       growth_curves{num_curve,faster_growing+1}, ...
                       growth_curves{num_curve,4-faster_growing}];
@@ -86,6 +86,7 @@ for i = 1:N
     end
 end
 
+%%
 while (it<maxit)&&(t<max_rounds)
     for n = randi(2,1,2) %randperm(N)
         if n==1
@@ -94,6 +95,7 @@ while (it<maxit)&&(t<max_rounds)
             cur_n = randi([N_P + 1, N]);
         end
         WT = Phen(:,:,cur_n) ;
+        
         MT = WT ;
         % mutate
         if cur_n <= N_P
@@ -116,17 +118,21 @@ while (it<maxit)&&(t<max_rounds)
         fMT = 0 ;
         M_cost_matrix = cost_matrix;
         for i = 1:N
-            if i~=cur_n
+            if 1 %i~=cur_n
                 fWT = fWT + weight_matrix(i)*cost_matrix(cur_n,i);
                 
                 g1 = growth_rate(MT, Cost);
                 g2 = growth_rate(Phen(:,:,i), Cost);
                 g = [g1,g2];
-                
+ 
                 [fastest_growth, faster_growing] = max(g);
                 growth_ratio = g(3-faster_growing)/g(faster_growing);
                 num_curve = find(r2>=growth_ratio,1,'first');
                 
+                if (r2(num_curve)==1)&&(all(Phen(:,:,i)==0))&&(any(MT~=0))
+                    MT(:)=0;
+                    i =1;
+                end
                 cur_growth = [growth_curves{num_curve,1}*(1/fastest_growth), ...
                               growth_curves{num_curve,faster_growing+1}, ...
                               growth_curves{num_curve,4-faster_growing}];
@@ -169,7 +175,7 @@ while (it<maxit)&&(t<max_rounds)
 end
 if t>=max_rounds
     it = it + 1 ;
-    Phen(:,:,cur_n) = MT ;
+    Phen(:,:,cur_n) = wT ;
     Phen_v(:,:,:,it) = Phen ;
     t_v(it,1) = t ;
     improvement(it,1) = fMT/fWT ;

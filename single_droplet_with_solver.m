@@ -55,11 +55,15 @@ function [y1,y2,production_resistance_1,production_resistance_2] = single_drople
             concentration = cumtrapz(t,y(:,1)* P1(i,2) + y(:,2)*P2(i,2));
         end
         [resistance, most_sensitive] = min([R1(i),R2(i)]);
-        I = find(concentration>resistance,1,'first');
-        if ~isempty(I) && t(I)<t_death
-            t_death = t(I);
-            pop_size = y(I,:);
-            overall_losing_bacteria = most_sensitive;
+        %I = find(concentration>resistance,1,'first');
+        if concentration(end)>resistance
+            t_first = interp1(concentration,t,resistance,'linear',0);
+            if t_first< t_death %~isempty(I) && t(I)<t_death
+                t_death = t_first; %t(I);
+                pop_size(1) = interp1(t,y(:,1),t_death); %y(I,:);
+                pop_size(2) = interp1(t,y(:,2),t_death); %y(I,:);
+                overall_losing_bacteria = most_sensitive;
+            end
         end
     end
     

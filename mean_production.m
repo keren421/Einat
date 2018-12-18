@@ -26,7 +26,7 @@ for i = 1:length(lines)
         interped_cum_production(1) = 0;
         window_mean = diff(interped_cum_production)./dt(j);
         average_production(i,j) = mean(window_mean);
-        var_production(i,j) = std(window_mean);
+        var_production(i,j) = std(window_mean)/sqrt(length(window_mean));
     end
     
     %var_production(i) =  trapz(temp_t,temp_p)/max(temp_t);
@@ -37,11 +37,13 @@ figure(); hold all;
 fig_legends = cell(length(dt),1);
 CM = jet(length(dt));
 for j = 1:length(log_dt)
-    errorbar(run_type,average_production(:,j),var_production(:,j),'color',CM(j,:))
+    errorbar(run_type,average_production(:,j),var_production(:,j),'color',CM(j,:),'linewidth',2)
     xlabel('num of resistant strains');
-    ylabel('aveage production value');
+    ylabel('average production value');
     grid on;
     fig_legends{j} = ['dt = ' num2str(dt(j))];
 end
 legend(fig_legends);
-
+set(gca,'fontsize',14);
+xlim([min(run_type),max(run_type)]);
+ylim([0,5]);

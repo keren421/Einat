@@ -1,4 +1,4 @@
-Cost = [0.05 0.5];
+Cost = [0.005 0.01];
 time_limit = 10;
 production = 0:0.01:2;
 t = 0:1:30;
