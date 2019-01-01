@@ -6,10 +6,11 @@ start_rand = false;
 Cost = [0.005 0.01] ; % resistance and production costs
 Mut_size = [0 -0.05]; % average size of resistant and production mutations (typically should be <=0)
 Mut_size_std = [0.1 0.1]; % standard deviation of resistant and production mutations
-Mut_0 = [0 0] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
+Mut_0 = [0.01 0.01] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 maxit = 1000; %1000 ; % max number of fixations 
-time_limit = 0.99;
-switch 5
+minimal_phen = [0.01  0];
+time_limit = 0.99; %0.8;
+switch 4
     case 1
         fig_num = 100;
         N_P = 1 ; % number of resistants       
@@ -26,10 +27,10 @@ switch 5
         N_R = 4; % number of resistants     
         maxit = 4000; % max number of fixations 
     case 4
-        fig_num = 130;
+        fig_num = 150;
         N_P = 1 ; % number of producers 
         N_R = 7; % number of resistants      
-        maxit = 7000; % max number of fixations 
+        maxit = 1000; % max number of fixations 
     case 5
         fig_num = 140;
         N_P = 1 ; % number of producers 
@@ -49,6 +50,7 @@ if start_rand
     Phen = rand(N_P,2,N);
 else
     Phen = zeros(N_P,2,N) ; %1:Res, 2:Production
+    Phen(:,1,N_P+1:N) = minimal_phen(1); %1:Res, 2:Production
 end
 
 load('saved_profiles\growth_curves_10000.mat')
@@ -91,24 +93,20 @@ while (it<maxit)&&(t<max_rounds)
     for n = randi(2,1,2) %randperm(N)
         if n==1
             cur_n = randi([1, N_P]);
-        else 
-            cur_n = randi([N_P + 1, N]);
-        end
-        WT = Phen(:,:,cur_n) ;
-        
-        MT = WT ;
-        % mutate
-        if cur_n <= N_P
             p = 2; %production
             k = cur_n;
-        else
+        else 
+            cur_n = randi([N_P + 1, N]);
             p = 1; %resistance
             k = randi(N_P);
         end
+        WT = Phen(:,:,cur_n) ;
+        MT = WT ;
+        % mutate
         P0 = MT(k,p) ;
         P0 = P0 + Mut_size(p) + Mut_size_std(p)*randn ; 
         P0 = P0 * (rand>Mut_0(p));
-        MT(k,p) = max(P0,0) ;
+        MT(k,p) = max(P0,minimal_phen(p));
 
         if all(all(WT == MT))
             continue;
@@ -118,7 +116,7 @@ while (it<maxit)&&(t<max_rounds)
         fMT = 0 ;
         M_cost_matrix = cost_matrix;
         for i = 1:N
-            if 1 %i~=cur_n
+            if i~=cur_n
                 fWT = fWT + weight_matrix(i)*cost_matrix(cur_n,i);
                 
                 g1 = growth_rate(MT, Cost);
@@ -129,14 +127,30 @@ while (it<maxit)&&(t<max_rounds)
                 growth_ratio = g(3-faster_growing)/g(faster_growing);
                 num_curve = find(r2>=growth_ratio,1,'first');
                 
-                if (r2(num_curve)==1)&&(all(Phen(:,:,i)==0))&&(any(MT~=0))
-                    MT(:)=0;
-                    i =1;
+                if growth_ratio == r2(num_curve)
+                    cur_growth = [growth_curves{num_curve,1}*(1/fastest_growth), ...
+                                  growth_curves{num_curve,faster_growing + 1}, ...
+                                  growth_curves{num_curve,4 - faster_growing}];
+                else
+                    t_after = growth_curves{num_curve,1};
+                    faster_after = growth_curves{num_curve,faster_growing + 1};
+                    slower_after = growth_curves{num_curve,4 - faster_growing};
+                    t_before = growth_curves{num_curve-1,1};
+                    faster_before = growth_curves{num_curve-1,faster_growing + 1};
+                    faster_before = interp1(t_before,faster_before,t_after);
+                    slower_before = growth_curves{num_curve-1,4 - faster_growing};
+                    slower_before = interp1(t_before,slower_before,t_after);
+
+                    faster_interp = (faster_before*(r2(num_curve)-growth_ratio) + ...
+                                    faster_after*(growth_ratio-r2(num_curve-1)))/(r2(num_curve) - r2(num_curve-1));
+
+                    slower_interp = (slower_before*(r2(num_curve)-growth_ratio) + ...
+                                    slower_after*(growth_ratio-r2(num_curve-1)))/(r2(num_curve) - r2(num_curve-1));
+
+                    cur_growth = [t_interp*(1/fastest_growth), ...
+                                  faster_interp, ...
+                                  slower_interp];
                 end
-                cur_growth = [growth_curves{num_curve,1}*(1/fastest_growth), ...
-                              growth_curves{num_curve,faster_growing+1}, ...
-                              growth_curves{num_curve,4-faster_growing}];
-                
                 [y_i,y_j,~,~] = single_droplet(MT,Phen(:,:,i),g,type_resist, scoring_type, decay, time_limit, cur_growth);
                 %[y1,y2,~,~] = single_droplet_with_solver(MT, Phen(:,:,i), g, type_resist, scoring_type, decay, time_limit);
                 

@@ -1,4 +1,4 @@
-needed_line = 'data11';
+needed_line = 'data9';
 draw_r = 1;
 h = gcf;
 legend
@@ -14,7 +14,7 @@ for i = 1:length(lines)
         t = lines(i).XData;
         p = lines(i).YData;
         if draw_r
-            r = -0.01271*p.^2 +0.5013*p;
+            r = -0.012564*p.^2 +0.44157*p+0.0077226;
             hold on
             plot(t,r,'k','displayname','minimal resistance')
         end

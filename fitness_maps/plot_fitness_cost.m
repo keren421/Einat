@@ -1,6 +1,6 @@
 %Cost = [0.005 0.01];
 Cost = [0.005 0.01];
-time_limit = 0.99;
+time_limit = 0.8;
 scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
 production = 0.0:0.01:10;
 resistance = 0.0:0.01:5;
@@ -40,7 +40,7 @@ fitness_producer = cost_producer;
 fitness_resistant= cost_resistant;
 
 %%
-figure(12); clf;
+figure(10); clf;
 
 subplot(1,2,1);
 imagesc(production, resistance, fitness_producer');

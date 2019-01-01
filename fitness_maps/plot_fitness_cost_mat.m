@@ -1,9 +1,9 @@
 %Cost = [0.005 0.01];
 Cost = [0.005 0.01];
-time_limit = 0.99;
+time_limit = 0.8;
 scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
 production = 0.0:0.01:10;
-resistance =  0.0:0.01:5;
+resistance = 0.0:0.01:5;
 
 run_name = 'loser_remains_time_limit_10';
 save_file = 0;
@@ -17,7 +17,7 @@ cost_resistant = nan(length(production),length(resistance));
 
 for i_p = 1:length(production)
     for i_r = 1:length(resistance)
-        producer(1) = production(i_p);
+        producer(2) = production(i_p);
         resistant(1) = resistance(i_r);
         
         g1 = growth_rate(producer, Cost);
@@ -27,10 +27,31 @@ for i_p = 1:length(production)
         [fastest_growth, faster_growing] = max(g);
         growth_ratio = g(3-faster_growing)/g(faster_growing);
         num_curve = find(r2>=growth_ratio,1,'first');
-                
-        cur_growth = [growth_curves{num_curve,1}*(1/fastest_growth), ...
-                      growth_curves{num_curve,faster_growing+1}, ...
-                      growth_curves{num_curve,4-faster_growing}];
+        
+        if growth_ratio == r2(num_curve)
+            cur_growth = [growth_curves{num_curve,1}*(1/fastest_growth), ...
+                          growth_curves{num_curve,faster_growing + 1}, ...
+                          growth_curves{num_curve,4 - faster_growing}];
+        else
+            t_after = growth_curves{num_curve,1};
+            faster_after = growth_curves{num_curve,faster_growing + 1};
+            slower_after = growth_curves{num_curve,4 - faster_growing};
+            t_before = growth_curves{num_curve-1,1};
+            faster_before = growth_curves{num_curve-1,faster_growing + 1};
+            faster_before = interp1(t_before,faster_before,t_after);
+            slower_before = growth_curves{num_curve-1,4 - faster_growing};
+            slower_before = interp1(t_before,slower_before,t_after);
+
+            faster_interp = (faster_before*(r2(num_curve)-growth_ratio) + ...
+                            faster_after*(growth_ratio-r2(num_curve-1)))/(r2(num_curve) - r2(num_curve-1));
+            
+            slower_interp = (slower_before*(r2(num_curve)-growth_ratio) + ...
+                            slower_after*(growth_ratio-r2(num_curve-1)))/(r2(num_curve) - r2(num_curve-1));
+
+            cur_growth = [t_interp*(1/fastest_growth), ...
+                          faster_interp, ...
+                          slower_interp];
+        end
                 
         [y_p,y_r,~,~] = single_droplet(producer,resistant, g,'max', scoring_type, decay, time_limit, cur_growth);
 

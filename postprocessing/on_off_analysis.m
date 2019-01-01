@@ -41,15 +41,18 @@ for i = 1:length(lines)
     deriv_on_off = diff(on_off);
     i_on_to_off = find(deriv_on_off<0);
     i_off_to_on = find(deriv_on_off>0);
+    if i_on_to_off(1)<i_off_to_on(1)
+        i_off_to_on = [1, i_off_to_on];
+    end
+    
     on_to_off = t(i_on_to_off);
     off_to_on = t(i_off_to_on);
-    
     trim_length = min(length(on_to_off),length(off_to_on));
-    on_to_off = [t(1), on_to_off(1:trim_length)];
+    on_to_off = on_to_off(1:trim_length);
     off_to_on = off_to_on(1:trim_length);
     
-    time_on = on_to_off(2:length(off_to_on)+1) - off_to_on;
-    time_off = off_to_on - on_to_off(1:length(off_to_on));
+    time_on = on_to_off - off_to_on;
+    time_off = off_to_on(2:end) - on_to_off(1:length(off_to_on)-1);
     
     average_t_on(i) = mean(time_on);
     median_t_on(i) = median(time_on);
