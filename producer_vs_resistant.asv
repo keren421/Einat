@@ -9,12 +9,11 @@ Mut_size_std = [0.1 0.1]; % standard deviation of resistant and production mutat
 Mut_0 = [0.01 0.01] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 minimal_phen = [0.01  0];
 time_limit = 0.8; %0.8;
-stop_flag_num_peak = 1;
+stop_flag_num_peak = 4;
 if stop_flag_num_peak
     already_produced = 0;
-    still_prducting = 0;
 end
-switch 4
+switch 1
     case 1
         fig_num = 100;
         N_P = 1 ; % number of resistants       
@@ -34,7 +33,7 @@ switch 4
         fig_num = 150;
         N_P = 1 ; % number of producers 
         N_R = 7; % number of resistants      
-        maxit = 1000; % max number of fixations 
+        maxit = 100; % max number of fixations 
     case 5
         fig_num = 140;
         N_P = 1 ; % number of producers 
@@ -52,8 +51,8 @@ if strcmp(start_option,'chosen')
     intial_resistance = 0.5*ones(N_R,1);
 end
 %%
-dt_print = 1000;
-dt_view = 10000;
+dt_print = 500;
+dt_view = 5000;
 %%
 N= N_R + N_P;
 
@@ -71,12 +70,10 @@ end
 
 load('saved_profiles\growth_curves_10000.mat')
 t = 0 ; % number of cycles
-it = 1 ; % number of fixation events
+it = 0 ; % number of fixation events
 t_v = nan(maxit,1) ;
 improvement = nan(maxit,1) ; %saves how beneficial was the mutation
 Phen_v = nan(N_P,2,N,maxit) ; % keeps all phenotypes versus time
-Phen_v(:,:,:,it) = Phen ; 
-t_v(it,1) = t ;
 max_rounds = 1e8;
 i_round = 0; 
 
@@ -203,16 +200,11 @@ while (it<maxit)&&(t<max_rounds)
     if ~mod(t,dt_view)
         plotPhen(fig_num, N_P, N, Phen_v, t_v)
     end
-    
-    if ~still_prducting && stop_flag_num_peak && any(Phen(:,2,1:N_P)>2*Mut_size_std(2))
-        already_produced = already_produced + 1;
-        still_prducting = 1;
+    if stop_flag_num_peak && any(Phen(:,2,1:N_P)>2*Mut_size_std(2))
+        already_produced = 1;
     end
-    if still_prducting  && all(Phen(:,2,1:N_P)<Mut_size_std(2))
-        still_prducting = 0;
-        if already_produced>=stop_flag_num_peak
-            break
-        end
+    if stop_flag_num_peak && already_produced && all(Phen(:,2,1:N_P)<Mut_size_std(2))
+        break
     end
 end
 if t>=max_rounds

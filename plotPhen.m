@@ -11,10 +11,11 @@ function [] = plotPhen(fig_num, K, N, Phen_v,t_v)
         title(sprintf('-Resistant, --Production, Antibiotic #%g',k))
         antibiotic_production(:,k) = sum(reshape(Phen_v(k,2,:,:),N,[]));
     end
-
+    drawnow
     figure(fig_num+1);clf;
     hold on
     plot(t_v,antibiotic_production,'--')
     plot(t_v,sum(antibiotic_production,2),'-','linewidth',2)
     title('total prodution')
+    drawnow
 end
