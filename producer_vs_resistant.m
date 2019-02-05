@@ -9,7 +9,7 @@ Mut_size_std = [0.1 0.1]; % standard deviation of resistant and production mutat
 Mut_0 = [0.01 0.01] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 maxit = 1000; %1000 ; % max number of fixations 
 minimal_phen = [0.01  0];
-time_limit = 0.99; %0.8;
+time_limit = 0.8; %0.8;
 switch 4
     case 1
         fig_num = 100;
@@ -20,7 +20,7 @@ switch 4
         fig_num = 110;
         N_P = 1 ; % number of producers 
         N_R = 2; % number of resistants 
-        maxit = 2000; % max number of fixations 
+        maxit = 1000; % max number of fixations 
     case 3
         fig_num = 120;
         N_P = 1 ; % number of producers 
@@ -30,12 +30,12 @@ switch 4
         fig_num = 150;
         N_P = 1 ; % number of producers 
         N_R = 7; % number of resistants      
-        maxit = 1000; % max number of fixations 
+        maxit = 100; % max number of fixations 
     case 5
         fig_num = 140;
         N_P = 1 ; % number of producers 
         N_R = 9; % number of resistants      
-        maxit = 500; % max number of fixations 
+        maxit = 9000; % max number of fixations 
     case 6
         fig_num = 145;
         N_P = 2 ; % number of producers 
@@ -116,7 +116,7 @@ while (it<maxit)&&(t<max_rounds)
         fMT = 0 ;
         M_cost_matrix = cost_matrix;
         for i = 1:N
-            if i~=cur_n
+            if 1 %i~=cur_n
                 fWT = fWT + weight_matrix(i)*cost_matrix(cur_n,i);
                 
                 g1 = growth_rate(MT, Cost);
@@ -147,7 +147,7 @@ while (it<maxit)&&(t<max_rounds)
                     slower_interp = (slower_before*(r2(num_curve)-growth_ratio) + ...
                                     slower_after*(growth_ratio-r2(num_curve-1)))/(r2(num_curve) - r2(num_curve-1));
 
-                    cur_growth = [t_interp*(1/fastest_growth), ...
+                    cur_growth = [t_after*(1/fastest_growth), ...
                                   faster_interp, ...
                                   slower_interp];
                 end
@@ -163,7 +163,6 @@ while (it<maxit)&&(t<max_rounds)
                 fMT = fMT + weight_matrix(i)*y_i;
             end
         end
-
         % fixation
         threshold = fMT/fWT - 1;
     %         if fMT>=fWT

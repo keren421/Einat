@@ -40,14 +40,13 @@ function [y1,y2,production_resistance_1,production_resistance_2] = single_drople
     bacteria_growth = @(t,y) [g1*y(1)*(1-y(1)-y(2)); ...
                              g2*y(2)*(1-y(1)-y(2))];
     %try rewtitting as d[logy]/dt
-    [t,y] = ode45(bacteria_growth,[0 max_t],[intial_pop; intial_pop]);
-    
+    %[t,y] = ode45(bacteria_growth,[0 max_t],[intial_pop; intial_pop]);
+    [t,y] = ode45(bacteria_growth,linspace(0,max_t,1000),[intial_pop; intial_pop]);
     %t = growth_curve(:,1);
     %y = growth_curve(:,2:3);
     
-    t_death = inf;
+    t_death = max_t;
     overall_losing_bacteria = nan;
-    pop_size = y(end,:) ;
     for i = 1:num_antibiotics
         if antibiotic_decay
             concentration = y(:,1)* P1(i,2) + y(:,2)*P2(i,2);
@@ -57,15 +56,16 @@ function [y1,y2,production_resistance_1,production_resistance_2] = single_drople
         [resistance, most_sensitive] = min([R1(i),R2(i)]);
         %I = find(concentration>resistance,1,'first');
         if concentration(end)>resistance
-            t_first = interp1(concentration,t,resistance,'linear',0);
+            t_first = interp1(concentration,t,resistance,'pchip',0);
             if t_first< t_death %~isempty(I) && t(I)<t_death
                 t_death = t_first; %t(I);
-                pop_size(1) = interp1(t,y(:,1),t_death); %y(I,:);
-                pop_size(2) = interp1(t,y(:,2),t_death); %y(I,:);
                 overall_losing_bacteria = most_sensitive;
             end
         end
     end
+    
+    pop_size(1) = interp1(t,y(:,1),t_death); 
+    pop_size(2) = interp1(t,y(:,2),t_death); 
     
     if ~isnan(overall_losing_bacteria)
         overall_winning_bacteria = 3 - overall_losing_bacteria ;

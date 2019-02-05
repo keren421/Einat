@@ -3,7 +3,7 @@ axesObjs = get(h, 'Children');
 dataObjs = get(axesObjs, 'Children');
 lines = dataObjs{2};
 
-log_dt = [4]; %linspace(4,5,10);
+log_dt = [4.5]; %linspace(4,5,10);
 dt = 10.^(log_dt);
 
 average_production = nan(length(lines),length(log_dt));
@@ -46,4 +46,4 @@ end
 legend(fig_legends);
 set(gca,'fontsize',14);
 xlim([min(run_type),max(run_type)]);
-ylim([0,0.4]);
+%ylim([0,0.4]);
