@@ -1,78 +1,30 @@
+function [Phen_v, t_v] = compete_with_intial_phen(N_R, fig_num,intial_production, intial_resistance)
 %% setup
 scoring_type = 'loser_dies_winner_gets_rest'; % 'winner_gets_all', 'loser_dies_winner_gets_rest', 'loser_remains_winner_gets_rest'
 type_resist = 'max'; % max , plus, resist
 decay = 1;
-start_option = 'zero'; % zero, rand, chosen
 Cost = [0.005 0.01] ; % resistance and production costs
 Mut_size = [0 -0.05]; % average size of resistant and production mutations (typically should be <=0)
 Mut_size_std = [0.1 0.1]; % standard deviation of resistant and production mutations
 Mut_0 = [0.01 0.01] ; % chance of null mutations causing complete loss of resistant(1) or production(2) 
 minimal_phen = [0.01  0];
 time_limit = 0.8; %0.8;
-stop_flag_num_peak = 0;
+stop_flag_num_peak = 1;
 if stop_flag_num_peak
     already_produced = 0;
     still_prducting = 0;
-else
-    still_prducting = 0; 
 end
-switch 3
-    case 1
-        fig_num = 100;
-        N_P = 1 ; % number of resistants       
-        N_R = 1;
-        maxit = 1000; % max number of fixations 
-    case 2
-        fig_num = 110;
-        N_P = 1 ; % number of producers 
-        N_R = 2; % number of resistants 
-        maxit = 1000; % max number of fixations 
-    case 3
-        fig_num = 170;
-        N_P = 1 ; % number of producers 
-        N_R = 4; % number of resistants     
-        maxit = 4000; % max number of fixations 
-    case 4
-        fig_num = 150;
-        N_P = 1 ; % number of producers 
-        N_R = 7; % number of resistants      
-        maxit = 1000; % max number of fixations 
-    case 5
-        fig_num = 140;
-        N_P = 1 ; % number of producers 
-        N_R = 9; % number of resistants      
-        maxit = 9000; % max number of fixations 
-    case 6
-        fig_num = 145;
-        N_P = 2 ; % number of producers 
-        N_R = 4; % number of resistants     
-        maxit = 3000; % max number of fixations 
-end
-%%
-if strcmp(start_option,'chosen')
-    intial_production = 0.5*ones(N_P,1);
-    intial_resistance = 0.4*ones(N_R,1);
-    intial_resistance(1) = 0.4 ;%0.25; % 0.25 - resistant to 0.5
-    intial_resistance(2) = 0.4 ;%0.25; % 0.25 - resistant to 0.5
-    intial_resistance(3) = 0.4 ;%0.25; % 0.25 - resistant to 0.5
-end
+maxit = 1e5;
+N_P = 1;
 %%
 dt_print = 1000;
 dt_view = 10000;
 %%
 N= N_R + N_P;
 
-switch start_option
-    case 'rand'
-        Phen = rand(N_P,2,N);
-    case 'zero'
-        Phen = zeros(N_P,2,N) ; %1:Res, 2:Production
-        Phen(:,1,N_P+1:N) = minimal_phen(1); %1:Res, 2:Production
-    case 'chosen'
-        Phen = zeros(N_P,2,N) ; %1:Res, 2:Production
-        Phen(:,2,1:N_P) = intial_production; %1:Res, 2:Production
-        Phen(:,1,N_P+1:N) = intial_resistance; %1:Res, 2:Production
-end
+Phen = zeros(N_P,2,N) ; %1:Res, 2:Production
+Phen(:,2,1:N_P) = intial_production; %1:Res, 2:Production
+Phen(:,1,N_P+1:N) = intial_resistance; %1:Res, 2:Production
 
 load('saved_profiles\growth_curves_10000.mat')
 t = 0 ; % number of cycles
@@ -82,7 +34,7 @@ improvement = nan(maxit,1) ; %saves how beneficial was the mutation
 Phen_v = nan(N_P,2,N,maxit) ; % keeps all phenotypes versus time
 Phen_v(:,:,:,it) = Phen ; 
 t_v(it,1) = t ;
-max_rounds = 2e5;
+max_rounds = 1e8;
 i_round = 0; 
 
 %% run
@@ -119,7 +71,7 @@ while (it<maxit)&&(t<max_rounds)
             p = 2; %production
             k = cur_n;
         else 
-            cur_n = 2; %randi([N_P + 1, N]);
+            cur_n = randi([N_P + 1, N]);
             p = 1; %resistance
             k = randi(N_P);
         end
@@ -213,7 +165,7 @@ while (it<maxit)&&(t<max_rounds)
         already_produced = already_produced + 1;
         still_prducting = 1;
     end
-    if still_prducting  && all(Phen(:,2,1:N_P)<Mut_size_std(2))
+    if still_prducting  && Phen(:,2,1)<Mut_size_std(2) %(max(Phen(:,2,1:N_P))/2)
         still_prducting = 0;
         if already_produced>=stop_flag_num_peak
             break
@@ -227,4 +179,4 @@ if t>=max_rounds
     t_v(it,1) = t ;
     improvement(it,1) = fMT/fWT ;
 end
-plotPhen(fig_num,N_P, N, Phen_v, t_v)
+%plotPhen(fig_num,N_P, N, Phen_v, t_v)

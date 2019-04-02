@@ -1,4 +1,4 @@
-needed_line = '1';
+needed_line = 'data6';
 draw_r = 1;
 h = gcf;
 legend
